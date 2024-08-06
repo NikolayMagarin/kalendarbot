@@ -6,7 +6,7 @@ export async function getBiblia() {
     date.setDate(date.getDate() + 1);
 
     const yesterdayString = date
-      .toLocaleDateString()
+      .toLocaleDateString('ru-RU')
       .replace(/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/, '$3-$2-$1');
 
     const res = await fetch('https://azbyka.ru/biblia/days/' + yesterdayString);

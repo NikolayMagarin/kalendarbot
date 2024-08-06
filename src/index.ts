@@ -79,7 +79,7 @@ export async function send() {
 
 CronJob.from({
   // cronTime: '*/10 * * * * *',
-  cronTime: '40 16 * * *',
+  cronTime: '20 16 * * *',
   onTick: send,
   timeZone: 'Europe/Moscow',
   start: true,

@@ -62,8 +62,13 @@ export function startServer() {
       }
     )
     .post('/tools/send', express.json(), useAdminSecret, function (req, res) {
-      send();
-      res.status(200).json({ ok: true });
+      send()
+        .then(() => {
+          res.status(200).json({ ok: true });
+        })
+        .catch((err) => {
+          res.status(200).json({ ok: false, data: err });
+        });
     });
 
   const server = app.listen(port, () => {
