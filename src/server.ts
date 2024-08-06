@@ -1,5 +1,6 @@
 import express, { RequestHandler } from 'express';
 import fetch from 'node-fetch';
+import { send } from '.';
 import { config } from './config';
 import { globalData, redefineData } from './lib/global-data';
 
@@ -59,7 +60,11 @@ export function startServer() {
         redefineData(req.body.data);
         res.status(200).json({ ok: true });
       }
-    );
+    )
+    .post('/tools/send', express.json(), useAdminSecret, function (req, res) {
+      send();
+      res.status(200).json({ ok: true });
+    });
 
   const server = app.listen(port, () => {
     started = true;

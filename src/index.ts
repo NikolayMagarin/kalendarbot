@@ -1,4 +1,4 @@
-import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
+import TelegramBot from 'node-telegram-bot-api';
 import { startServer } from './server';
 import { config } from './config';
 import { CronJob } from 'cron';
@@ -48,37 +48,39 @@ bot.on('text', (msg) => {
   }
 });
 
+export async function send() {
+  const calendar = (await getCalendar()) || 'Не удалось получить данные';
+  const biblia = (await getBiblia()) || 'Не удалось получить данные';
+  globalData.chatIds.forEach(async (chatId) => {
+    await bot.sendMessage(chatId, calendar);
+
+    for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
+      await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
+    }
+    /*
+    bot.sendMessage(chatId, biblia, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: 'Цитата',
+              callback_data: JSON.stringify({
+                chatId: chatId,
+                action: 'bible-quote',
+              }),
+            },
+          ],
+        ],
+      },
+    });
+    */
+  });
+}
+
 CronJob.from({
   // cronTime: '*/10 * * * * *',
-  cronTime: '0 16 * * *',
-  onTick: async () => {
-    const calendar = (await getCalendar()) || 'Не удалось получить данные';
-    const biblia = (await getBiblia()) || 'Не удалось получить данные';
-    globalData.chatIds.forEach(async (chatId) => {
-      await bot.sendMessage(chatId, calendar);
-
-      for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
-        await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
-      }
-      /*
-      bot.sendMessage(chatId, biblia, {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: 'Цитата',
-                callback_data: JSON.stringify({
-                  chatId: chatId,
-                  action: 'bible-quote',
-                }),
-              },
-            ],
-          ],
-        },
-      });
-      */
-    });
-  },
+  cronTime: '40 16 * * *',
+  onTick: send,
   timeZone: 'Europe/Moscow',
   start: true,
 });
