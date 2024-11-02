@@ -12,7 +12,7 @@ export async function getCalendar() {
 
     const date = new Date();
     date.setDate(date.getDate() + 1);
-    const yesterdayString = date
+    const tomorrowString = date
       .toLocaleDateString('ru-RU', {
         dateStyle: 'long',
       })
@@ -22,13 +22,19 @@ export async function getCalendar() {
       calendarElements.length - 1
     );
 
-    const calendarElement = lastCalendarElement?.textContent?.includes(
-      yesterdayString
-    )
+    function isTomorrow(str: string | null | undefined) {
+      if (!str) return false;
+      const tomorrowStringParts = tomorrowString.split(' ');
+      return (
+        str.includes(tomorrowStringParts[0]) &&
+        str.includes(tomorrowStringParts[1]) &&
+        str.includes(tomorrowStringParts[2])
+      );
+    }
+
+    const calendarElement = isTomorrow(lastCalendarElement?.textContent)
       ? lastCalendarElement
-      : [...calendarElements].find((el) =>
-          el.textContent?.includes(yesterdayString)
-        ) || null;
+      : [...calendarElements].find((el) => isTomorrow(el.textContent)) || null;
 
     if (!calendarElement) {
       return null;
@@ -42,7 +48,16 @@ export async function getCalendar() {
       if (childNode.nodeType === childNode.ELEMENT_NODE) {
         const element = childNode as Element;
         if (element.tagName === 'A') {
-          stringBuilder += element.textContent;
+          if (isTomorrow(element.textContent)) {
+            stringBuilder +=
+              tomorrowString +
+              ', ' +
+              date.toLocaleDateString('ru-RU', {
+                weekday: 'long',
+              });
+          } else {
+            stringBuilder += element.textContent;
+          }
           lastWasBR = false;
         } else if (element.tagName === 'BR') {
           if (lastWasBR) {
