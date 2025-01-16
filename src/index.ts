@@ -57,46 +57,12 @@ export async function send() {
     for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
       await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
     }
-    /*
-    bot.sendMessage(chatId, biblia, {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: 'Цитата',
-              callback_data: JSON.stringify({
-                chatId: chatId,
-                action: 'bible-quote',
-              }),
-            },
-          ],
-        ],
-      },
-    });
-    */
   });
 }
 
 CronJob.from({
-  // cronTime: '*/10 * * * * *',
   cronTime: '20 16 * * *',
   onTick: send,
   timeZone: 'Europe/Moscow',
   start: true,
-});
-
-bot.on('callback_query', (query) => {
-  if (!query.data) {
-    return;
-  }
-
-  const data = JSON.parse(query.data);
-
-  if (data.action === 'bible-quote') {
-    bot.sendMessage(data.chatId, 'Отправьте текст для цитаты');
-    globalData.chatData[data.chatId].dialogState = 1;
-  }
-
-  bot.answerCallbackQuery(query.id);
-  // bot.answerCallbackQuery(query.id, { text: 'some text' });
 });

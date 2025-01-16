@@ -10,6 +10,7 @@
     "send": "set SERVER_URL=https://kalendarbot.onrender.com&& node ./out/tools/send.js",
     "global-data-save": "set SERVER_URL=https://kalendarbot.onrender.com&& node ./out/tools/global-data-save.js",
     "global-data-restore": "set SERVER_URL=https://kalendarbot.onrender.com&& node ./out/tools/global-data-restore.js",
+    "send-localhost": "set SERVER_URL=http://localhost:8080&& node ./out/tools/send.js",
     "global-data-save-localhost": "set SERVER_URL=http://localhost:8080&& node ./out/tools/global-data-save.js",
     "global-data-restore-localhost": "set SERVER_URL=http://localhost:8080&& node ./out/tools/global-data-restore.js"
   },
