@@ -6,7 +6,7 @@ import { globalData } from './lib/global-data';
 import { getCalendar } from './lib/calendar';
 import { getBiblia } from './lib/biblia';
 
-const keepAliveServer = startServer();
+const server = startServer();
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!, {
   polling: {
@@ -20,7 +20,7 @@ bot.on('polling_error', (error) => {
   const errorMsg = error.message.toLowerCase();
   if (errorMsg.includes('409') && errorMsg.includes('conflict')) {
     bot.stopPolling();
-    keepAliveServer?.close();
+    server.close();
   }
 });
 
@@ -32,19 +32,19 @@ bot.on('text', (msg) => {
     );
     return;
   }
-  if (!config.usersAllowed.includes(msg.from?.id)) {
+  if (!config.usersAllowed.includes(msg.from.id)) {
     bot.sendMessage(
       msg.chat.id,
       'У вас нет доступа к боту. Если вы считаете, что произошла ошибка, свяжитесь с @NikolayMagarin'
     );
     return;
-  } else {
-    if (msg.text === '/start') {
-      globalData.chatData[msg.chat.id] = { quote: '', dialogState: 0 };
-      if (!globalData.chatIds.includes(msg.chat.id)) {
-        globalData.chatIds.push(msg.chat.id);
-      }
-    }
+  }
+
+  if (msg.text === '/start') {
+    bot.sendMessage(
+      msg.chat.id,
+      'Добро пожаловать. Бот присылает данные каждый день в 16:20 МСК'
+    );
   }
 });
 

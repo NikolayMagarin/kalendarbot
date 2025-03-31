@@ -2,91 +2,81 @@ import { JSDOM } from 'jsdom';
 
 export async function getCalendar() {
   try {
-    const res = await fetch('https://t.me/s/avcalendar');
-    const str = await res.text();
-    const document = new JSDOM(str).window.document;
-
-    const calendarElements = document.getElementsByClassName(
-      'tgme_widget_message_text'
-    );
-
     const date = new Date();
     date.setDate(date.getDate() + 1);
-    const tomorrowString = date
-      .toLocaleDateString('ru-RU', {
-        dateStyle: 'long',
-      })
-      .slice(0, -3);
 
-    const lastCalendarElement = calendarElements.item(
-      calendarElements.length - 1
+    const res = await fetch(
+      'https://azbyka.ru/days/' + formatDateToFetch(date)
+    );
+    const str = await res.text();
+    const calendarEl = new JSDOM(str).window.document.getElementById(
+      'calendar'
     );
 
-    function isTomorrow(str: string | null | undefined) {
-      if (!str) return false;
-      const tomorrowStringParts = tomorrowString.split(' ');
-      return (
-        str.includes(tomorrowStringParts[0]) &&
-        str.includes(tomorrowStringParts[1]) &&
-        str.includes(tomorrowStringParts[2])
-      );
+    let stringBuilder = '#церковный_календарь\n\n' + formatDateToShow(date);
+
+    const postEl = calendarEl?.getElementsByClassName('post')[0];
+    if (postEl) {
+      stringBuilder += '\n' + postEl.textContent?.trim();
     }
 
-    const calendarElement = isTomorrow(lastCalendarElement?.textContent)
-      ? lastCalendarElement
-      : [...calendarElements].find((el) => isTomorrow(el.textContent)) || null;
+    const payloadEl = calendarEl?.getElementsByClassName('text day__text')[0];
 
-    if (!calendarElement) {
-      return null;
-    }
-
-    let stringBuilder = '';
-    let paragraphsCounter = 0;
-    let lastWasBR = false;
-
-    for (const childNode of calendarElement.childNodes) {
-      if (childNode.nodeType === childNode.ELEMENT_NODE) {
-        const element = childNode as Element;
-        if (element.tagName === 'A') {
-          if (isTomorrow(element.textContent)) {
-            stringBuilder +=
-              tomorrowString +
-              ', ' +
-              date.toLocaleDateString('ru-RU', {
-                weekday: 'long',
-              });
-          } else {
-            stringBuilder += element.textContent;
-          }
-          lastWasBR = false;
-        } else if (element.tagName === 'BR') {
-          if (lastWasBR) {
-            if (paragraphsCounter < 2) {
-              paragraphsCounter++;
-            } else {
-              break;
-            }
-          }
-          stringBuilder += '\n';
-          lastWasBR = true;
-        }
-      } else if (childNode.nodeType === childNode.TEXT_NODE) {
-        stringBuilder += childNode.textContent;
-        lastWasBR = false;
+    const preparagraphs = payloadEl?.getElementsByTagName('p');
+    if (preparagraphs) {
+      for (let i = 0; i < preparagraphs.length; i++) {
+        stringBuilder += '\n';
+        stringBuilder += preparagraphs[i].textContent
+          ?.replace(/(\n|\t)/gm, '')
+          ?.replace(/Глас.*/g, '')
+          .trim();
       }
     }
 
-    return (
-      '#церковный_календарь\n\n' +
-      stringBuilder
-        .trim()
-        .replace(/(Постный день\.|Поста нет\.).*/, '$1')
-        .replace('\nПостный день', 'Постный день')
-        .replace('\nПоста нет', 'Поста нет')
-        .replace('Богослужебные указания.\n', '')
-    );
+    const ideograph = payloadEl?.getElementsByClassName('ideograph-0')[0];
+    if (ideograph) {
+      stringBuilder += '\n' + ideograph.textContent?.trim();
+    }
+
+    const paragraphs = payloadEl?.getElementsByTagName('ul');
+
+    if (paragraphs) {
+      stringBuilder += '\n';
+      for (let i = 0; i < paragraphs.length; i++) {
+        const lines = paragraphs[i].getElementsByTagName('li');
+        if (lines && !lines[0].className.includes('ideograph-0')) {
+          const linesTexts = [];
+          for (let k = 0; k < lines.length; k++) {
+            linesTexts.push(lines[k].textContent?.trim());
+          }
+          stringBuilder += '\n' + linesTexts.join('; ') + '.';
+        }
+      }
+    }
+
+    return stringBuilder;
   } catch (e) {
     console.error(e);
     return null;
   }
+}
+
+function formatDateToFetch(date: Date) {
+  return date
+    .toLocaleDateString('ru-RU')
+    .replace(/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/, '$3-$2-$1');
+}
+
+function formatDateToShow(date: Date) {
+  return (
+    date
+      .toLocaleDateString('ru-RU', {
+        dateStyle: 'long',
+      })
+      .slice(0, -3) +
+    ', ' +
+    date.toLocaleDateString('ru-RU', {
+      weekday: 'long',
+    })
+  );
 }

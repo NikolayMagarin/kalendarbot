@@ -20,9 +20,7 @@ const useSelfPingSecret: RequestHandler = (req, res, next) => {
   }
 };
 
-let started = false;
 export function startServer() {
-  if (started) return;
   const app = express();
   const port = config.port;
   const selfUrl = process.env.SELF_URL || `http://localhost:${port}`;
@@ -72,7 +70,6 @@ export function startServer() {
     });
 
   const server = app.listen(port, () => {
-    started = true;
     console.log('server started');
   });
 

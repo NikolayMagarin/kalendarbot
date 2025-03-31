@@ -10,11 +10,11 @@ export async function getBiblia() {
     const date = new Date();
     date.setDate(date.getDate() + 1);
 
-    const yesterdayString = date
+    const tomorrowString = date
       .toLocaleDateString('ru-RU')
       .replace(/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/, '$3-$2-$1');
 
-    const res = await fetch('https://azbyka.ru/biblia/days/' + yesterdayString);
+    const res = await fetch('https://azbyka.ru/biblia/days/' + tomorrowString);
     const str = await res.text();
     const document = new JSDOM(str).window.document;
 
