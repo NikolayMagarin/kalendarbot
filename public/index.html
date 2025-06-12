@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Календарь - отправить</title>
+    <style>
+      :root {
+        --bg-color: #151a23;
+        --input-color: #2d3b4d;
+        --button-color: #2f61a7;
+        --button-hover: #43699f;
+        --text-color: #f0f0f0;
+        --border-radius: 12px;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+      }
+
+      .container {
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      #secretInput {
+        margin-bottom: 25px;
+        padding: 12px 15px;
+        width: 100%;
+        box-sizing: border-box;
+        border: none;
+        border-radius: var(--border-radius);
+        background-color: var(--input-color);
+        color: var(--text-color);
+        font-size: 16px;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      #secretInput:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--button-color);
+      }
+
+      #submitBtn {
+        padding: 14px 30px;
+        width: 100%;
+        max-width: 200px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: var(--border-radius);
+        background-color: var(--button-color);
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      #submitBtn:hover:not(:disabled) {
+        background-color: var(--button-hover);
+      }
+
+      #submitBtn:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      #submitBtn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      @media (max-width: 480px) {
+        #secretInput {
+          padding: 14px 15px;
+          font-size: 15px;
+        }
+
+        #submitBtn {
+          padding: 16px 30px;
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <input
+        type="text"
+        id="secretInput"
+        placeholder="Введите секретный ключ"
+      />
+      <button id="submitBtn">Отправить</button>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const secretInput = document.getElementById('secretInput');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const savedSecret = localStorage.getItem('secretKey');
+
+        if (!savedSecret) {
+          secretInput.style.display = 'block';
+        }
+
+        submitBtn.addEventListener('click', async function () {
+          let secret = savedSecret;
+
+          if (!savedSecret) {
+            secret = secretInput.value.trim();
+            if (!secret) {
+              alert('Пожалуйста, введите секретный ключ');
+              return;
+            }
+            localStorage.setItem('secretKey', secret);
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Отправляем...';
+
+          try {
+            const response = await fetch('/tools/send', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ secret: secret }),
+            });
+
+            if (response.ok) {
+              submitBtn.textContent = 'Готово';
+              submitBtn.style.backgroundColor = '#4CAF50';
+            } else {
+              throw new Error('Ошибка сервера');
+            }
+          } catch (error) {
+            console.error('Ошибка:', error);
+            submitBtn.textContent = 'Ошибка';
+            submitBtn.style.backgroundColor = '#f44336';
+            setTimeout(() => {
+              submitBtn.textContent = 'Отправить';
+              submitBtn.disabled = false;
+              submitBtn.style.backgroundColor = '';
+            }, 3000);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -2,7 +2,6 @@ import TelegramBot from 'node-telegram-bot-api';
 import { startServer } from './server';
 import { config } from './config';
 import { CronJob } from 'cron';
-import { globalData } from './lib/global-data';
 import { getCalendar } from './lib/calendar';
 import { getBiblia } from './lib/biblia';
 
@@ -51,9 +50,8 @@ bot.on('text', (msg) => {
 export async function send() {
   const calendar = (await getCalendar()) || 'Не удалось получить данные';
   const biblia = (await getBiblia()) || 'Не удалось получить данные';
-  globalData.chatIds.forEach(async (chatId) => {
+  config.usersAllowed.forEach(async (chatId) => {
     await bot.sendMessage(chatId, calendar);
-
     for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
       await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
     }

@@ -1,19 +1,10 @@
 import express, { RequestHandler } from 'express';
-import fetch from 'node-fetch';
 import { send } from '.';
 import { config } from './config';
-import { globalData, redefineData } from './lib/global-data';
+import path from 'path';
 
 const useAdminSecret: RequestHandler = (req, res, next) => {
-  if (req.body?.adminSecret === config.adminSecret) {
-    next();
-  } else {
-    res.status(403).json({ ok: false, data: 'Not allowed' });
-  }
-};
-
-const useSelfPingSecret: RequestHandler = (req, res, next) => {
-  if (req.body?.selfPingSecret === config.selfPingSecret) {
+  if (req.body?.secret === config.adminSecret) {
     next();
   } else {
     res.status(403).json({ ok: false, data: 'Not allowed' });
@@ -23,72 +14,26 @@ const useSelfPingSecret: RequestHandler = (req, res, next) => {
 export function startServer() {
   const app = express();
   const port = config.port;
-  const selfUrl = process.env.SELF_URL || `http://localhost:${port}`;
 
-  app
-    .post('/self-ping', express.json(), useSelfPingSecret, function (req, res) {
-      setTimeout(() => {
-        fetch(selfUrl + '/self-ping', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            selfPingSecret: config.selfPingSecret,
-          }),
-        }).catch();
-      }, 30_000);
-      res.json({ ok: true, status: 'alive' });
-    })
-    .post(
-      '/tools/global-data/save',
-      express.json(),
-      useAdminSecret,
-      function (req, res) {
-        res.status(200).json({ ok: true, data: globalData });
-      }
-    )
-    .post(
-      '/tools/global-data/restore',
-      express.json(),
-      useAdminSecret,
-      function (req, res) {
-        // TODO: сделать проверку валидности приходящих данных (npm i joi)
-        // res.status(400).json({ ok: false, data: 'invalid data' });
-        redefineData(req.body.data);
+  app.post('/tools/send', express.json(), useAdminSecret, function (req, res) {
+    send()
+      .then(() => {
         res.status(200).json({ ok: true });
-      }
-    )
-    .post('/tools/send', express.json(), useAdminSecret, function (req, res) {
-      send()
-        .then(() => {
-          res.status(200).json({ ok: true });
-        })
-        .catch((err) => {
-          res.status(200).json({ ok: false, data: err });
-        });
-    });
+      })
+      .catch((err) => {
+        res.status(500).json({ ok: false, data: err });
+      });
+  });
+
+  app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+  });
+
+  const publicPath = path.join(__dirname, '..', 'public');
+  app.use('/', express.static(publicPath));
 
   const server = app.listen(port, () => {
     console.log('server started');
   });
-
-  fetch(selfUrl + '/self-ping', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      selfPingSecret: config.selfPingSecret,
-    }),
-  })
-    .then(() => {
-      console.log('self ping loop activated');
-    })
-    .catch((err) => {
-      console.error(err);
-      console.log('cannot activate self ping loop');
-    });
-
   return server;
 }
