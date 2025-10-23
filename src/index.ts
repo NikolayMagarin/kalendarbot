@@ -50,12 +50,23 @@ bot.on('text', (msg) => {
 export async function send() {
   const calendar = (await getCalendar()) || 'Не удалось получить данные';
   const biblia = (await getBiblia()) || 'Не удалось получить данные';
-  config.usersAllowed.forEach(async (chatId) => {
-    await bot.sendMessage(chatId, calendar);
+
+  if (!config.onlyOneUser) {
+    config.usersAllowed.forEach(async (chatId) => {
+      await bot.sendMessage(chatId, calendar);
+      for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
+        await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
+      }
+    });
+  } else {
+    await bot.sendMessage(config.usersAllowed[0], calendar);
     for (let i = 0; i < Math.ceil(biblia.length / 4096); i++) {
-      await bot.sendMessage(chatId, biblia.slice(i * 4096, (i + 1) * 4096));
+      await bot.sendMessage(
+        config.usersAllowed[0],
+        biblia.slice(i * 4096, (i + 1) * 4096)
+      );
     }
-  });
+  }
 }
 
 CronJob.from({

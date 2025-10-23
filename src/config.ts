@@ -14,4 +14,6 @@ export const config = {
   port: getEnvValue('PORT'),
   adminSecret: getEnvValue('ADMIN_SECRET'),
   usersAllowed: [1464486368, 2097992443],
+  onlyOneUser: process.env['ONLY_ONE_USER'] === '1',
+  selfUrl: process.env['SELF_URL'] || null,
 };
