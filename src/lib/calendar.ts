@@ -13,6 +13,15 @@ export async function getCalendar() {
       'calendar'
     );
 
+    const elementsToHide =
+      calendarEl?.getElementsByClassName('norm-screen-hide');
+
+    if (elementsToHide) {
+      for (let i = 0; i < elementsToHide.length; i++) {
+        elementsToHide[i].remove();
+      }
+    }
+
     let stringBuilder = '#церковный_календарь\n\n' + formatDateToShow(date);
 
     const postEl = calendarEl?.getElementsByClassName('post')[0];
