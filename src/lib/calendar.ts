@@ -38,6 +38,7 @@ export async function getCalendar() {
         stringBuilder += preparagraphs[i].textContent
           ?.replace(/(\n|\t)/gm, '')
           ?.replace(/Глас.*/g, '')
+          ?.replace(/Постный календарь./, '')
           .trim();
       }
     }
@@ -62,6 +63,8 @@ export async function getCalendar() {
         }
       }
     }
+
+    stringBuilder = stringBuilder.replace(/\n{3,}/g, '\n\n');
 
     return stringBuilder;
   } catch (e) {
