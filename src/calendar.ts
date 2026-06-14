@@ -1,9 +1,9 @@
 import { JSDOM } from 'jsdom';
 
-export async function getCalendar() {
+export async function getCalendar(dateOffset = 1) {
   try {
     const date = new Date();
-    date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate() + dateOffset);
 
     const res = await fetch(
       'https://azbyka.ru/days/' + formatDateToFetch(date)

@@ -3,17 +3,23 @@ import assert from 'assert';
 
 dotevn.config();
 
-function getEnvValue(key: string) {
+function getEnvValue(key: string, optional: true): string | undefined;
+function getEnvValue(key: string, optional?: false): string;
+function getEnvValue(key: string, optional = false) {
   const val = process.env[key];
-  assert(val, `Please set ${key} in environment`);
+  if (optional) return val;
+  assert(val, `Please set ${key} in .env file`);
   return val;
 }
 
-export const config = {
-  telegramToken: getEnvValue('TELEGRAM_TOKEN'),
-  port: getEnvValue('PORT'),
-  adminSecret: getEnvValue('ADMIN_SECRET'),
-  usersAllowed: [1464486368, 2097992443],
-  onlyOneUser: process.env['ONLY_ONE_USER'] === '1',
-  selfUrl: process.env['SELF_URL'] || null,
+interface Config {
+  selfPingUrl: string | null;
+  selfPingSecret: string | null;
+  selfPingInterval: number | null;
+}
+
+export const config: Config = {
+  selfPingUrl: getEnvValue('SELF_PING_URL', true) || null,
+  selfPingSecret: getEnvValue('SELF_PING_SECRET', true) || null,
+  selfPingInterval: Number(getEnvValue('SELF_PING_INTERVAL', true)) || null,
 };

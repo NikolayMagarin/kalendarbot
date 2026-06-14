@@ -5,10 +5,10 @@ const startText =
 const endText =
   '\n\n***\nСлава Тебе‌, Го‌споди Царю‌, Сы‌не Бо‌га жива‌го, сподо‌бивый мя‌ недосто‌йнаго Боже‌ственная Твоя‌ словеса‌ и гла‌с Свята‌го Ева‌нгелия Твоего‌ слы‌шати; си‌м у‌бо влады‌чним Твои‌м гла‌сом, укрепи‌ мя‌ в покая‌нии настоя‌щия сея‌ жи‌зни прейти‌ но‌щь, от вся‌каго избавля‌я мя‌ наве‌та и зло‌бы ви‌димых и неви‌димых вра‌г: Ты‌ бо еси‌ еди‌н си‌льный, и ца‌рствуяй во ве‌ки. Ами‌нь.';
 
-export async function getBiblia() {
+export async function getBiblia(dateOffset = 1) {
   try {
     const date = new Date();
-    date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate() + dateOffset);
 
     const tomorrowString = date
       .toLocaleDateString('ru-RU')
