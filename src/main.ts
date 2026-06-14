@@ -2,8 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { selfPing, selfPingRouter } from './selfPing';
 import { createHTML } from './createHTML';
-import { getCalendar } from './calendar';
-import { getBiblia } from './biblia';
+import { getBibliaWithCache, getCalendarWithCache } from './cache';
 
 const app = express();
 
@@ -16,8 +15,8 @@ app.use(express.json());
 app.get('/', async (req, res) => {
   res.send(
     createHTML([
-      (await getCalendar(1)) || 'Не удалось получить',
-      (await getBiblia(1)) || 'Не удалось получить',
+      (await getCalendarWithCache(1)) || 'Не удалось получить данные',
+      (await getBibliaWithCache(1)) || 'Не удалось получить данные',
     ])
   );
 });
@@ -25,8 +24,8 @@ app.get('/', async (req, res) => {
 app.get('/today', async (req, res) => {
   res.send(
     createHTML([
-      (await getCalendar(0)) || 'Не удалось получить',
-      (await getBiblia(0)) || 'Не удалось получить',
+      (await getCalendarWithCache(0)) || 'Не удалось получить данные',
+      (await getBibliaWithCache(0)) || 'Не удалось получить данные',
     ])
   );
 });

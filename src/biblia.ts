@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom';
+import { dateWithOffset, formatDateShort } from './date';
 
 const startText =
   '\nМолитва перед чтением Евангелия\n\nСпаси, Господи, и помилуй рабов Твоих (имена) словами Божественного Евангелия, чтомыми о спасении рабов Твоих. Попали, Господи, терние всех их согрешений, и да вселится в них благодать Твоя, опаляющая, очищающая, освящающая всего человека во имя Отца и Сына и Святого Духа. Аминь.\n\n';
@@ -7,14 +8,11 @@ const endText =
 
 export async function getBiblia(dateOffset = 1) {
   try {
-    const date = new Date();
-    date.setDate(date.getDate() + dateOffset);
+    const date = dateWithOffset(dateOffset);
 
-    const tomorrowString = date
-      .toLocaleDateString('ru-RU')
-      .replace(/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/, '$3-$2-$1');
-
-    const res = await fetch('https://azbyka.ru/biblia/days/' + tomorrowString);
+    const res = await fetch(
+      'https://azbyka.ru/biblia/days/' + formatDateShort(date)
+    );
     const str = await res.text();
     const document = new JSDOM(str).window.document;
 

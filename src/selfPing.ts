@@ -28,7 +28,7 @@ export async function selfPing() {
         },
       });
     } catch {
-      console.log('[app] selfping failed');
+      console.error('[app] selfping failed');
     }
   }
 }
