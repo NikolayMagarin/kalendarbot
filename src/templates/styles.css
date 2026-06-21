@@ -1,0 +1,224 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    sans-serif;
+  padding: 1.5rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(2px);
+  border-radius: 2rem;
+  box-shadow:
+    0 20px 35px -12px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.page-title {
+  margin-bottom: 0.5rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #1a2a3a, #1e3a5f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.25rem;
+  display: inline-block;
+}
+
+.sub {
+  color: #4a627a;
+  margin-bottom: 2rem;
+  border-left: 3px solid #7c9ebf;
+  padding-left: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 450;
+}
+
+.pre-container {
+  margin-bottom: 2rem;
+  border-radius: 1.25rem;
+  background: #0f1722;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.pre-container:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.pre-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.2rem;
+  background: #0b1119;
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+  border-bottom: 1px solid #2a3647;
+}
+
+.label {
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #2a3a4e;
+  padding: 0.25rem 0.7rem;
+  border-radius: 2rem;
+  color: #d1e2f5;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+}
+
+.copy-btn {
+  background: #2b3b4e;
+  border: none;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border-radius: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #f0f6fe;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+.copy-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.copy-btn:hover {
+  background: #3f5a74;
+  transform: scale(0.97);
+  cursor: pointer;
+}
+
+.copy-btn:active {
+  transform: scale(0.96);
+  background: #1f3346;
+}
+
+.copy-btn.copied {
+  background: #2c7a5e;
+  color: white;
+  box-shadow: 0 0 6px rgba(44, 122, 94, 0.5);
+}
+
+pre {
+  margin: 0;
+  padding: 1.2rem 1.5rem;
+  font-family:
+    "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #eef4ff;
+  background: #0f1722;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  tab-size: 4;
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: #3c5670 #1e2a3a;
+}
+
+pre::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #1a2532;
+  border-radius: 10px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #4a6e8c;
+  border-radius: 10px;
+}
+
+.copy-flash {
+  animation: gentleFlash 0.32s ease-out;
+}
+
+@keyframes gentleFlash {
+  0% {
+    background-color: #0f1722;
+  }
+  50% {
+    background-color: #2f4b6e;
+  }
+  100% {
+    background-color: #0f1722;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .pre-header {
+    padding: 0.6rem 1rem;
+  }
+
+  pre {
+    padding: 1rem;
+    font-size: 0.75rem;
+  }
+
+  .copy-btn {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+button {
+  background: none;
+  border: none;
+}
